@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# EF Core Power Tools generated diagrams
+*.dgml
