@@ -1,8 +1,7 @@
 ## JobApplicationTracker
 A Job Application Tracker built in C# to practice authentication authorization and full stack development with ASP.net.
 
-**Stack:** Frontend → Blazor | Auth → ASP.NET Identity | Backend → Blazor | Database → EF Core
-
+Stack: Frontend + Backend → Blazor Web App (Interactive Server) | Auth → ASP.NET Identity | Database → EF Core
 
 ## Description: 
 
@@ -15,9 +14,9 @@ I'm building this project to develop proficiency in building full stack web appl
 
 ## Implementation Plan
 
-**1. Web API design**
+1. Data model design
 - Define core entities (Application, Company, Contact, Reminder, etc.)
-- Plan out endpoints for CRUD operations on applications
+- Plan out the Blazor pages/components needed for CRUD operations on applications
   
 **2. Database architecture**
 - Design schema in EF Core (relationships between applications, companies, and users
