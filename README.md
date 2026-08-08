@@ -42,7 +42,6 @@ I'm building this project to develop proficiency in building full stack web appl
 
 
 # Architecture:
-- *(Database diagram to be added via Visual Studio's visualizer once the schema is set up)*
 ```mermaid
 erDiagram
   ApplicationUser ||--o{ Application : tracks
