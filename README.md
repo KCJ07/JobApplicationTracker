@@ -6,7 +6,7 @@ A Job Application Tracker built in C# to practice authentication authorization a
 
 ## Description: 
 
-I'm building this project to develop proficiency in building full stack web applications. Currently, I keep track of the jobs I've applied to through an Excel spreadsheet, however, this makes it hard to visualize them individually and making any changes to how the data is kept track means I have to extend or change the whole sheet. Additionally, any kind of job specific notes just ends up as a comment which makes it extremely clustered. this projects goal is to simplify the entire process so I can simply focus on applying more efficiently. 
+I'm building this project to develop proficiency in building full stack web applications. Currently, I keep track of the jobs I've applied to through an Excel spreadsheet, however, this makes it hard to visualize them individually and making any changes to how the data is formatted kept track means I have to extend or change the whole sheet. Additionally, any kind of job specific notes just ends up as a comment which makes it extremely clustered. this projects goal is to simplify the entire process so I can focus on applying more efficiently. 
 
 ## Setup
 
