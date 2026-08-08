@@ -43,7 +43,37 @@ I'm building this project to develop proficiency in building full stack web appl
 
 # Architecture:
 - *(Database diagram to be added via Visual Studio's visualizer once the schema is set up)*
+```mermaid
+erDiagram
+  ApplicationUser ||--o{ Application : tracks
+  Job ||--o{ Application : "is tracked via"
 
+  ApplicationUser {
+    string Id PK
+    string Email
+    string UserName
+  }
+  Job {
+    int Id PK
+    string JobTitle
+    string Company
+    string Website
+    string AppType
+    string State
+    string Description
+    string LinkedInRecruiter
+  }
+  Application {
+    int Id PK
+    string ApplicationUserId FK
+    int JobId FK
+    string Status
+    bool HeardBack
+    date DateApplied
+    date ReachOutDate
+    string Notes
+  }
+```
 
 # Future Ideas for project
 - AI assisted recruiter lookup
