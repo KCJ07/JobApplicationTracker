@@ -1,7 +1,7 @@
 ## JobApplicationTracker
 A Job Application Tracker built in C# to practice authentication authorization and full stack development with ASP.net.
 
-**Stack:** Frontend → Blazor | Auth → ASP.NET Identity | Backend API → ASP.NET Core Web API | Database → EF Core
+**Stack:** Frontend → Blazor | Auth → ASP.NET Identity | Backend → Blazor | Database → EF Core
 
 
 ## Description: 
