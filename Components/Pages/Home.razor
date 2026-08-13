@@ -1,7 +1,78 @@
-﻿@page "/"
+﻿@page "/Home"
+@using JobApplicationTracker.Services;
+@using Microsoft.AspNetCore.Components.Authorization
+
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<Grid TItem="Application"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="CustomersDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      AllowSorting="true"
+      Responsive="true">
 
-Welcome to your new app.
+    <GridColumn TItem="Application" HeaderText="Date Applied" PropertyName="DateApplied" SortString="DateApplied" SortKeySelector="item => item.DateApplied" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.DateApplied
+    </GridColumn>
+    <GridColumn TItem="Application" HeaderText="Job Title" PropertyName="JobTitle" SortString="JobTitle" SortKeySelector="item => item.Job.JobTitle" FilterTextboxWidth="80">
+        @context.Job.JobTitle
+    </GridColumn>
+    <GridColumn TItem="Application" HeaderText="Company Name" PropertyName="CompanyName" SortString="CompanyName" SortKeySelector="item => item.Job.Company" FilterTextboxWidth="100">
+        @context.Job.Company
+    </GridColumn>
+    <GridColumn TItem="Application" HeaderText="Heard Back" PropertyName="HeardBack" SortString="HeardBack" SortKeySelector="item => item.HeardBack" FilterTextboxWidth="120">
+        @context.HeardBack
+    </GridColumn>
+    <GridColumn TItem="Application" HeaderText="Status" PropertyName="Status" SortString="Status" SortKeySelector="item => item.Status" FilterTextboxWidth="150">
+        @context.Status
+    </GridColumn>
+    <GridColumn TItem="Application" HeaderText="Reach Out Date" PropertyName="ReachOutDate" SortString="ReachOutDate" SortKeySelector="item => item.ReachOutDate" FilterTextboxWidth="80">
+        @context.ReachOutDate
+    </GridColumn>
+    <GridColumn TItem="Application" HeaderText="State" PropertyName="State" SortString="State" SortKeySelector="item => item.Job.State" FilterTextboxWidth="80">
+        @context.Job.State
+    </GridColumn>
+
+</Grid>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+
+    private string? userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            var authState = await authenticationStateTask;
+            userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
+        } else
+        {
+            throw (new Exception("Unable to find you as a user"));
+        }
+    }
+
+    [Inject] public IApplicationService ApplicationService { get; set; } = default!;
+
+    private async Task<GridDataProviderResult<Application>> CustomersDataProvider(GridDataProviderRequest<Application> request)
+    {
+		
+
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
+        }
+        //Task<(List<Application> Data, int TotalCount)> GetApplicationsAsync( int pageNumber, int pageSize, string sortString, SortDirection sortDirection, string userId)
+
+        var result = await ApplicationService.GetApplicationsAsync(request.PageNumber, request.PageSize, sortString, sortDirection, userId! );
+        return await Task.FromResult(new GridDataProviderResult<Application> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+}
