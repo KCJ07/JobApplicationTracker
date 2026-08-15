@@ -78,5 +78,42 @@ namespace JobApplicationTracker.Services
             return (applications, totalCount);
 
         }
+
+
+        public async Task CreateApplicationAsync(string userId, ApplicationStatus status, bool heardBack, DateOnly reachOutDate, DateOnly dateApplied, string notes, string jobTitle, string company, string website, ApplicationType appType, string state, string description, string linkedlnRecruiter)
+        {
+            var job = new Job
+            {
+                JobTitle = jobTitle,
+                Company = company,
+                Website = website,
+                AppType = appType,
+                State = state,
+                Description = description,
+                LinkedlnRecruiter = linkedlnRecruiter
+
+
+            };
+
+            var application = new Application
+            {
+                Status = status,
+                HeardBack = heardBack,
+                ReachOutDate = reachOutDate,
+                DateApplied = dateApplied,
+                Notes = notes,
+                ApplicationUserId = userId,
+                Job = job
+
+            };
+
+
+
+            _context.Add(application);
+            await _context.SaveChangesAsync();
+        }
+
+
+
     }
 }

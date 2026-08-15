@@ -1,12 +1,14 @@
 using JobApplicationTracker.Components;
 using JobApplicationTracker.Components.Account;
 using JobApplicationTracker.Data;
+using JobApplicationTracker.Models;
+using JobApplicationTracker.Services;
 using JobApplicationTracker.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using JobApplicationTracker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +49,7 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 var app = builder.Build();
 
 
+// seed user data
 using (var scoped = app.Services.CreateScope())
 {
     var scope = scoped.ServiceProvider;
@@ -111,19 +114,58 @@ using (var scoped = app.Services.CreateScope())
 
 }
 
+// seed job application data for johanson@ user (admin)
+using (var scope = app.Services.CreateScope())
+{
+    var scoped = scope.ServiceProvider;
+    var appService = scoped.GetRequiredService<IApplicationService>();
+    var userManager = scoped.GetRequiredService<UserManager<ApplicationUser>>();
+    var dbContext = scoped.GetRequiredService<ApplicationDbContext>();
+    var user = await userManager.FindByNameAsync("johanson@grinnell.edu");
+
+    if (user is not null)
+    {
+     bool alreadySeeded = await dbContext.Applications
+    .Include(a => a.Job)
+    .AnyAsync(a =>
+        a.ApplicationUserId == user.Id &&
+        a.Job.JobTitle == "Software Engineer" &&
+        a.Job.Company == "Acme Corp");
+
+        if (!alreadySeeded)
+        {
+            await appService.CreateApplicationAsync(
+                userId: user.Id.ToString(),
+                status: ApplicationStatus.Applied,
+                heardBack: false,
+                reachOutDate: new DateOnly(2026, 8, 25),
+                dateApplied: new DateOnly(2026, 8, 15),
+                notes: "",
+                jobTitle: "Software Engineer",
+                company: "Acme Corp",
+                website: "acme.com",
+                appType: ApplicationType.Job,
+                state: "AZ",
+                description: "A test Job",
+                linkedlnRecruiter: "N/A"
+                    );
+        }
+    }
+}
 
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseMigrationsEndPoint();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
