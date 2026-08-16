@@ -78,35 +78,6 @@
 	</div>
 </div>
 
-<script>
-	function togglePasswordVisibility() {
-		const input = document.getElementById('Input.Password');
-		const icon = document.getElementById('togglePasswordIcon');
-	if (input.type === 'password') {
-		input.type = 'text';
-		icon.className = 'bi bi-eye-slash';
-	} else {
-		input.type = 'password';
-		icon.className = 'bi bi-eye';
-	}
-	}
-		function onPasswordInput() {
-		const input = document.getElementById('Input.Password');
-		const btn = document.getElementById('togglePassBtn');
-		const icon = document.getElementById('togglePasswordIcon');
-
-		if (input.value.length > 0) {
-			btn.style.display = 'inline-block';
-		} else {
-			btn.style.display = 'none';
-			input.type = 'password';
-			icon.className = 'bi bi-eye';
-		}
-	}
-
-	document.addEventListener('DOMContentLoaded', onPasswordInput);
-
-</script>
 
 @code {
 	private bool showPass = false;

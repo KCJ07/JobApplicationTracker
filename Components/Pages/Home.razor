@@ -1,12 +1,13 @@
 ﻿@page "/Home"
-@using JobApplicationTracker.Services;
+@using JobApplicationTracker.Services
 @rendermode InteractiveServer
 @attribute [Authorize]
 
 
 <PageTitle>Home</PageTitle>
 
-<Grid TItem="Application"
+<Grid @ref="grid"
+      TItem="Application"
       Class="table table-hover table-bordered table-striped"
       DataProvider="CustomersDataProvider"
       AllowFiltering="true"
@@ -37,12 +38,83 @@
     </GridColumn>
 
 </Grid>
+<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Add Application</Button>
+
+<Modal @ref="modal" Title="Add New Application">
+    <BodyTemplate>
+        <EditForm Model="newApp" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label class="form-label">Job Title*</label>
+                <InputText @bind-Value="newApp.JobTitle" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Company*</label>
+                <InputText @bind-Value="newApp.Company" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Website</label>
+                <InputText @bind-Value="newApp.Website" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">State</label>
+                <InputText @bind-Value="newApp.State" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <InputTextArea @bind-Value="newApp.Description" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">LinkedIn Recruiter</label>
+                <InputText @bind-Value="newApp.LinkedlnRecruiter" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date Applied</label>
+                <InputDate @bind-Value="newApp.DateApplied" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Reach Out Date</label>
+                <InputDate @bind-Value="newApp.ReachOutDate" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <InputSelect @bind-Value="newApp.Status" class="form-control">
+                    @foreach (var status in Enum.GetValues<ApplicationStatus>())
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Application Type</label>
+                <InputSelect @bind-Value="newApp.AppType" class="form-control">
+                    @foreach (var type in Enum.GetValues<ApplicationType>())
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-check mb-3">
+                <InputCheckbox @bind-Value="newApp.HeardBack" class="form-check-input" />
+                <label class="form-check-label">Heard Back</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Application</button>
+        </EditForm>
+    </BodyTemplate>
+</Modal>
+
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationStateTask { get; set; }
-
+    private Grid<Application> grid = default!;
+    private Modal modal = default!;
+    private NewApplicationFormModel newApp = new();
     private string? userId;
+
+    [Inject] public IApplicationService ApplicationService { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState>? authenticationStateTask { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,30 +122,69 @@
         {
             var authState = await authenticationStateTask;
             userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
-        } else
+        }
+        else
         {
-            throw (new Exception("Unable to find you as a user"));
+            throw new Exception("Unable to find you as a user");
         }
     }
 
-    [Inject] public IApplicationService ApplicationService { get; set; } = default!;
+    private async Task OnShowModalClick()
+    {
+        newApp = new NewApplicationFormModel();
+        await modal.ShowAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        await ApplicationService.CreateApplicationAsync(
+            userId: userId!,
+            status: newApp.Status,
+            heardBack: newApp.HeardBack,
+            reachOutDate: newApp.ReachOutDate,
+            dateApplied: newApp.DateApplied,
+            notes: newApp.Notes,
+            jobTitle: newApp.JobTitle,
+            company: newApp.Company,
+            website: newApp.Website,
+            appType: newApp.AppType,
+            state: newApp.State,
+            description: newApp.Description,
+            linkedlnRecruiter: newApp.LinkedlnRecruiter
+        );
+
+        await modal.HideAsync();
+        await grid.RefreshDataAsync();
+    }
 
     private async Task<GridDataProviderResult<Application>> CustomersDataProvider(GridDataProviderRequest<Application> request)
     {
-		
-
         string sortString = "";
         SortDirection sortDirection = SortDirection.None;
 
         if (request.Sorting is not null && request.Sorting.Any())
         {
-            // Note: Multi column sorting is not supported at this moment
             sortString = request.Sorting.FirstOrDefault()!.SortString;
             sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
-        //Task<(List<Application> Data, int TotalCount)> GetApplicationsAsync( int pageNumber, int pageSize, string sortString, SortDirection sortDirection, string userId)
 
-        var result = await ApplicationService.GetApplicationsAsync(request.PageNumber, request.PageSize, sortString, sortDirection, userId! );
+        var result = await ApplicationService.GetApplicationsAsync(request.PageNumber, request.PageSize, sortString, sortDirection, userId!);
         return await Task.FromResult(new GridDataProviderResult<Application> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+
+    public class NewApplicationFormModel
+    {
+        [Required] public string JobTitle { get; set; } = "";
+        [Required] public string Company { get; set; } = "";
+        public string Website { get; set; } = "";
+        public string State { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string LinkedlnRecruiter { get; set; } = "";
+        public string Notes { get; set; } = "";
+        public DateOnly DateApplied { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public DateOnly ReachOutDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public ApplicationStatus Status { get; set; } = ApplicationStatus.Applied;
+        public ApplicationType AppType { get; set; }
+        public bool HeardBack { get; set; }
     }
 }

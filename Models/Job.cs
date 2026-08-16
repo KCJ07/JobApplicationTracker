@@ -17,6 +17,6 @@ public class Job
 
 public enum ApplicationType
 {
-    Internship,
-    Job
+    FullTime,
+    InternShip
 }

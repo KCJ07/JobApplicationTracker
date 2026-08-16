@@ -3,7 +3,6 @@ using JobApplicationTracker.Components.Account;
 using JobApplicationTracker.Data;
 using JobApplicationTracker.Models;
 using JobApplicationTracker.Services;
-using JobApplicationTracker.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -144,7 +143,7 @@ using (var scope = app.Services.CreateScope())
                 jobTitle: "Software Engineer",
                 company: "Acme Corp",
                 website: "acme.com",
-                appType: ApplicationType.Job,
+                appType: ApplicationType.FullTime,
                 state: "AZ",
                 description: "A test Job",
                 linkedlnRecruiter: "N/A"
