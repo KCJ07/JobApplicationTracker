@@ -9,25 +9,25 @@ I'm building this project to develop proficiency in building full stack web appl
 
 ## Setup
 
-*(Coming soon — setup instructions will be added once the initial project structure is in place.)*
+*(Coming soon - setup instructions will be added once the initial project structure is in place.)*
 
 
 ## Implementation Plan
 
-1. Data model design
+1. Data model design - Done
 - Define core entities (Application, Company, Contact, Reminder, etc.)
 - Plan out the Blazor pages/components needed for CRUD operations on applications
   
-**2. Database architecture**
+**2. Database architecture** - Done
 - Design schema in EF Core (relationships between applications, companies, and users
 - Set up migrations
 
-**3. User accounts and authentication/authorization**
+**3. User accounts and authentication/authorization** 
 - Implement user model and registration/login 
 - Wire up ASP.NET Identity
 - Handle Roles and Permissions
   
-**4. Seed test data**
+**4. Seed test data** - Done
 - Seed demo users and sample applications for testing/demoing
 
 **5. Excel wrapper - design**
