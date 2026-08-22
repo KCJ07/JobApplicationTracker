@@ -53,6 +53,9 @@ using (var scoped = app.Services.CreateScope())
 {
     var scope = scoped.ServiceProvider;
 
+    var context = scope.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+
     var userManager = scope.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.GetRequiredService<RoleManager<IdentityRole>>();
 
