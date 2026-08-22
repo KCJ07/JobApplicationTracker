@@ -7,6 +7,9 @@
 <PageTitle>Home</PageTitle>
 
 <Grid @ref="grid"
+      AutoHidePaging = "true"
+      AllowRowClick = "true"
+      OnRowClick="OnRowClick"
       TItem="Application"
       Class="table table-hover table-bordered table-striped"
       DataProvider="CustomersDataProvider"
@@ -36,7 +39,11 @@
     <GridColumn TItem="Application" HeaderText="State" PropertyName="State" SortString="State" SortKeySelector="item => item.Job.State" FilterTextboxWidth="80">
         @context.Job.State
     </GridColumn>
-
+    <GridColumn TItem="Application" HeaderText="" TextAlignment="Alignment.Start" Filterable="false">
+        <button class="btn btn-sm btn-outline-danger delete-btn" @onclick="() => DeleteApplication(context.Id)">
+            <i class="bi bi-trash"></i>
+        </button>
+    </GridColumn>
 </Grid>
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Add Application</Button>
 
@@ -106,7 +113,29 @@
     </BodyTemplate>
 </Modal>
 
+<style>
+    .delete-btn {
+        visibility: hidden;
+    }
 
+    tr:hover .delete-btn {
+        visibility: visible;
+    }
+
+    /* strip background for everything for the last column (trash) */
+    table.table tr > *:last-child {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        border-top: hidden !important;
+        border-bottom: hidden !important;
+        border-right: hidden !important;
+    }
+
+    /* Give the second to last table the closing edge since last one is the trash box */
+    table.table tr > *:nth-last-child(2) {
+        border-right: 1px solid #dee2e6 !important;
+    }
+</style>
 @code {
     private Grid<Application> grid = default!;
     private Modal modal = default!;
@@ -187,4 +216,17 @@
         public ApplicationType AppType { get; set; }
         public bool HeardBack { get; set; }
     }
+
+
+    private async Task OnRowClick(GridRowEventArgs<Application> args)
+    {
+        /// need this to be redirect to either a modal or new page to edit the application!
+    }
+
+    public async Task DeleteApplication(int appId)
+    {
+        await ApplicationService.DeleteApplicationAsync(appId, userId!);
+        await grid.RefreshDataAsync();
+    }
+
 }

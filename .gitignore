@@ -430,3 +430,9 @@ FodyWeavers.xsd
 
 # EF Core Power Tools generated diagrams
 *.dgml
+
+# LLM project files
+.claude/
+
+# Local SQLite database
+Data/app.db

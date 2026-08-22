@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using JobApplicationTracker.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 
 namespace JobApplicationTracker.Services
@@ -114,6 +115,15 @@ namespace JobApplicationTracker.Services
         }
 
 
+        public async Task DeleteApplicationAsync(int appId, string userId)
+        {
+            var query = _context.Applications
+                .Where(x => x.ApplicationUserId == userId)
+                .Where(x => x.Id == appId)
+                .ExecuteDelete();
 
+            await _context.SaveChangesAsync();
+
+        }
     }
 }
