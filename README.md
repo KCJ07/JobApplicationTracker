@@ -9,7 +9,9 @@ I'm building this project to develop proficiency in building full stack web appl
 
 ## Setup
 
-*(Coming soon - setup instructions will be added once the initial project structure is in place.)*
+1. Clone repository
+2. Run project (dotnet build-> dotnet run, dotnet watch)
+3. Login is auto seeded
 
 
 ## Implementation Plan
