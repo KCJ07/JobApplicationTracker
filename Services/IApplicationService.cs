@@ -12,11 +12,9 @@ namespace JobApplicationTracker.Services
         Task CreateApplicationAsync(string userId, ApplicationStatus status, bool heardBack, DateOnly reachOutDate, DateOnly dateApplied, string notes, string jobTitle, string company, string website, ApplicationType appType, string state, string description, string linkedlnRecruiter);
 
         Task DeleteApplicationAsync(int appId, string userId);
-        
 
 
-
-
+        Task UpdateApplicationAsync(int appId, string userId, ApplicationStatus status, bool heardBack, DateOnly reachOutDate, DateOnly dateApplied, string notes, string jobTitle, string company, string website, ApplicationType appType, string state, string description, string linkedlnRecruiter);
 
 
         }

@@ -166,21 +166,42 @@
 
     private async Task HandleSubmit()
     {
-        await ApplicationService.CreateApplicationAsync(
-            userId: userId!,
-            status: newApp.Status,
-            heardBack: newApp.HeardBack,
-            reachOutDate: newApp.ReachOutDate,
-            dateApplied: newApp.DateApplied,
-            notes: newApp.Notes,
-            jobTitle: newApp.JobTitle,
-            company: newApp.Company,
-            website: newApp.Website,
-            appType: newApp.AppType,
-            state: newApp.State,
-            description: newApp.Description,
-            linkedlnRecruiter: newApp.LinkedlnRecruiter
-        );
+        if (newApp.isUpdate == false)
+        {
+            await ApplicationService.CreateApplicationAsync(
+                userId: userId!,
+                status: newApp.Status,
+                heardBack: newApp.HeardBack,
+                reachOutDate: newApp.ReachOutDate,
+                dateApplied: newApp.DateApplied,
+                notes: newApp.Notes,
+                jobTitle: newApp.JobTitle,
+                company: newApp.Company,
+                website: newApp.Website,
+                appType: newApp.AppType,
+                state: newApp.State,
+                description: newApp.Description,
+                linkedlnRecruiter: newApp.LinkedlnRecruiter
+            );
+        } else
+        {
+            await ApplicationService.UpdateApplicationAsync(
+                appId: newApp.Id,
+                userId: userId!,
+                status: newApp.Status,
+                heardBack: newApp.HeardBack,
+                reachOutDate: newApp.ReachOutDate,
+                dateApplied: newApp.DateApplied,
+                notes: newApp.Notes,
+                jobTitle: newApp.JobTitle,
+                company: newApp.Company,
+                website: newApp.Website,
+                appType: newApp.AppType,
+                state: newApp.State,
+                description: newApp.Description,
+                linkedlnRecruiter: newApp.LinkedlnRecruiter
+            );
+        }
 
         await modal.HideAsync();
         await grid.RefreshDataAsync();
@@ -215,12 +236,31 @@
         public ApplicationStatus Status { get; set; } = ApplicationStatus.Applied;
         public ApplicationType AppType { get; set; }
         public bool HeardBack { get; set; }
+        public bool isUpdate { get; set; } = false;
+        public int Id { get; set; }
     }
 
 
     private async Task OnRowClick(GridRowEventArgs<Application> args)
     {
         /// need this to be redirect to either a modal or new page to edit the application!
+
+        newApp.JobTitle = args.Item.Job.JobTitle;
+        newApp.Company = args.Item.Job.JobTitle;
+        newApp.Website = args.Item.Job.Website;
+        newApp.State = args.Item.Job.State;
+        newApp.Description = args.Item.Job.Description;
+        newApp.LinkedlnRecruiter = args.Item.Job.LinkedlnRecruiter;
+        newApp.Notes = args.Item.Notes;
+        newApp.DateApplied = args.Item.DateApplied;
+        newApp.ReachOutDate = args.Item.ReachOutDate;
+        newApp.Status = args.Item.Status;
+        newApp.AppType = args.Item.Job.AppType;
+        newApp.HeardBack = args.Item.HeardBack;
+        newApp.isUpdate = true;
+        newApp.Id = args.Item.Id;
+
+        await modal.ShowAsync();
     }
 
     public async Task DeleteApplication(int appId)

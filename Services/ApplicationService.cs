@@ -125,5 +125,38 @@ namespace JobApplicationTracker.Services
             await _context.SaveChangesAsync();
 
         }
+
+        public async Task UpdateApplicationAsync(int appId, string userId, ApplicationStatus status, bool heardBack, DateOnly reachOutDate, DateOnly dateApplied, string notes, string jobTitle, string company, string website, ApplicationType appType, string state, string description, string linkedlnRecruiter)
+        {
+            var query = await _context.Applications
+                .Include(x => x.Job)
+                .Where(x => x.ApplicationUserId == userId)
+                .Where(x => x.Id == appId)
+                .FirstOrDefaultAsync();
+
+            if (query == null)
+            {
+                return;
+            }
+
+            query.Status = status;
+            query.HeardBack = heardBack;
+            query.ReachOutDate = reachOutDate;
+            query.DateApplied = dateApplied;
+            query.Notes = notes;
+            query.Job.JobTitle = jobTitle; 
+            query.Job.Company = company;
+            query.Job.Website = website;
+            query.Job.AppType = appType;
+            query.Job.State = state;
+            query.Job.Description = description;
+            query.Job.LinkedlnRecruiter = linkedlnRecruiter;
+
+
+
+            await _context.SaveChangesAsync();
+
+
+        }
     }
 }
