@@ -76,14 +76,14 @@ erDiagram
   }
 ```
 
-#TODO:
-[ ] - Add show password icon and implementation for all password fields not just the login screen
-[ ] - Excel Import Implementation 
-[ ] - Larger view mode other than just the original
-[ ] - Fix editor not working by clicking on row in small view mode 
-[ ] - Set up the database as a server via Azure
-[ ] - Fix error on edit row in modal for small view staying after exiting edit and adding new application or editing another
-[ ] - Migrate to get ride of passkey related database tables 
+# TODO:
+- [ ]  Add show password icon and implementation for all password fields not just the login screen
+- [ ] Excel Import Implementation 
+- [ ] Larger view mode other than just the original
+- [ ] Fix editor not working by clicking on row in small view mode 
+- [ ] Set up the database as a server via Azure
+- [ ] Fix error on edit row in modal for small view staying after exiting edit and adding new application or editing another
+- [ ] Migrate to get ride of passkey related database tables 
 
 # Future Ideas for project
 - AI assisted recruiter lookup
