@@ -90,6 +90,7 @@ erDiagram
 - [ ] figure out where notifications should be (for reaching out and user recomendations)
 - [ ] Fix bug where edit table shows up when clicking the delete icon
 - [ ] Get rid of searching in small view (not working)
+- [ ] add Stats viewer
 
 # Future Ideas for project
 - AI assisted recruiter lookup
