@@ -16,7 +16,7 @@ I'm building this project to develop proficiency in building full stack web appl
 
 ## Implementation Plan
 
-**1. Data model design - Done
+**1. Data model design** - Done
 - Define core entities (Application, Company, Contact, Reminder, etc.)
 - Plan out the Blazor pages/components needed for CRUD operations on applications
   
@@ -77,13 +77,17 @@ erDiagram
 ```
 
 # TODO:
-- [ ]  Add show password icon and implementation for all password fields not just the login screen
+- [ ] Add show password icon and implementation for all password fields not just the login screen
 - [ ] Excel Import Implementation 
 - [ ] Larger view mode other than just the original
-- [ ] Fix editor not working by clicking on row in small view mode 
+- [X] Fix editor not working by clicking on row in small view mode 
 - [ ] Set up the database as a server via Azure
 - [ ] Fix error on edit row in modal for small view staying after exiting edit and adding new application or editing another
-- [ ] Migrate to get ride of passkey related database tables 
+- [ ] Migrate to get ride of passkey related database tables
+- [ ] Automatic reach out date implementation
+- [ ] Figure out how to handle notifications
+- [ ] Send a notification when reach out date is hit 
+- [ ] figure out where notifications should be (for reaching out and user recomendations)
 
 # Future Ideas for project
 - AI assisted recruiter lookup
