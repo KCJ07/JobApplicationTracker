@@ -89,6 +89,7 @@ erDiagram
 - [ ] Send a notification when reach out date is hit 
 - [ ] figure out where notifications should be (for reaching out and user recomendations)
 - [ ] Fix bug where edit table shows up when clicking the delete icon
+- [ ] Get rid of searching in small view (not working)
 
 # Future Ideas for project
 - AI assisted recruiter lookup
