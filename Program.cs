@@ -138,11 +138,11 @@ using (var scope = app.Services.CreateScope())
         {
             await appService.CreateApplicationAsync(
                 userId: user.Id.ToString(),
-                status: ApplicationStatus.Applied,
+                status: ApplicationStatus.Interviewing,
                 heardBack: false,
                 reachOutDate: new DateOnly(2026, 8, 25),
                 dateApplied: new DateOnly(2026, 8, 15),
-                notes: "",
+                notes: "Recruiter mentioned a second-round technical interview next week.",
                 jobTitle: "Software Engineer",
                 company: "Acme Corp",
                 website: "acme.com",

@@ -5,6 +5,20 @@
 
 
 <PageTitle>Home</PageTitle>
+<div class="btn-group mb-3" role="group">
+    <button class="btn @(viewMode == "grid" ? "btn-primary" : "btn-outline-primary")"
+            @onclick='() => viewMode = "grid"'>
+        <i class="bi bi-table"></i> Table
+    </button>
+    <button class="btn @(viewMode == "cards" ? "btn-primary" : "btn-outline-primary")"
+            @onclick='() => viewMode = "cards"'>
+        <i class="bi bi-grid-3x3-gap"></i> Cards
+    </button>
+</div>
+
+@if (viewMode == "grid")
+{
+    
 
 <Grid @ref="grid"
       AutoHidePaging = "true"
@@ -46,6 +60,52 @@
     </GridColumn>
 </Grid>
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Add Application</Button>
+} else
+{
+    <div class="row row-cols-1 g-4">
+        @foreach (var app in cardApplications)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0">@app.Job.JobTitle</h3>
+                            <div class="text-secondary">@app.Job.Company</div>
+                        </div>
+                        <span class="badge bg-@GetStatusColor(app.Status) text-white fs-6">
+                            @app.Status
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <p class="card-text">@app.Job.Description</p>
+
+                        @if (!string.IsNullOrWhiteSpace(app.Notes))
+                        {
+                            <p class="card-text text-secondary fst-italic">@app.Notes</p>
+                        }
+
+                        <div class="row text-secondary small mt-3">
+                            <div class="col">Applied: @app.DateApplied</div>
+                            <div class="col">Reach out to recruiter by: @app.ReachOutDate</div>
+                            <div class="col">@app.Job.AppType</div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                        <button class="btn btn-outline-danger" @onclick="() => DeleteApplication(app.Id)">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                        <button class="btn btn-primary" @onclick="() => EditFromCard(app)">
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Add Application</Button>
+}
 
 <Modal @ref="modal" Title="Add New Application">
     <BodyTemplate>
@@ -137,10 +197,13 @@
     }
 </style>
 @code {
+    private string viewMode = "grid";
+
     private Grid<Application> grid = default!;
     private Modal modal = default!;
     private NewApplicationFormModel newApp = new();
     private string? userId;
+    private List<Application> cardApplications = new();
 
     [Inject] public IApplicationService ApplicationService { get; set; } = default!;
     [CascadingParameter] private Task<AuthenticationState>? authenticationStateTask { get; set; }
@@ -156,6 +219,8 @@
         {
             throw new Exception("Unable to find you as a user");
         }
+
+        await LoadCardApplicationsAsync();
     }
 
     private async Task OnShowModalClick()
@@ -205,6 +270,7 @@
 
         await modal.HideAsync();
         await grid.RefreshDataAsync();
+        await LoadCardApplicationsAsync();
     }
 
     private async Task<GridDataProviderResult<Application>> CustomersDataProvider(GridDataProviderRequest<Application> request)
@@ -221,6 +287,21 @@
         var result = await ApplicationService.GetApplicationsAsync(request.PageNumber, request.PageSize, sortString, sortDirection, userId!);
         return await Task.FromResult(new GridDataProviderResult<Application> { Data = result.Item1, TotalCount = result.Item2 });
     }
+
+    private async Task LoadCardApplicationsAsync()
+    {
+        var result = await ApplicationService.GetApplicationsAsync(1, 100, "", SortDirection.None, userId!);
+        cardApplications = result.Item1.ToList();
+    }
+
+    private string GetStatusColor(ApplicationStatus status) => status switch
+    {
+        ApplicationStatus.Applied => "primary",
+        ApplicationStatus.Interviewing => "warning",
+        ApplicationStatus.Rejected => "danger",
+        ApplicationStatus.Offered => "success",
+        _ => "secondary"
+    };
 
     public class NewApplicationFormModel
     {
@@ -241,25 +322,35 @@
     }
 
 
+    private void PopulateFormFromApplication(Application item)
+    {
+        newApp.JobTitle = item.Job.JobTitle;
+        newApp.Company = item.Job.Company;
+        newApp.Website = item.Job.Website;
+        newApp.State = item.Job.State;
+        newApp.Description = item.Job.Description;
+        newApp.LinkedlnRecruiter = item.Job.LinkedlnRecruiter;
+        newApp.Notes = item.Notes;
+        newApp.DateApplied = item.DateApplied;
+        newApp.ReachOutDate = item.ReachOutDate;
+        newApp.Status = item.Status;
+        newApp.AppType = item.Job.AppType;
+        newApp.HeardBack = item.HeardBack;
+        newApp.isUpdate = true;
+        newApp.Id = item.Id;
+    }
+
     private async Task OnRowClick(GridRowEventArgs<Application> args)
     {
         /// need this to be redirect to either a modal or new page to edit the application!
 
-        newApp.JobTitle = args.Item.Job.JobTitle;
-        newApp.Company = args.Item.Job.JobTitle;
-        newApp.Website = args.Item.Job.Website;
-        newApp.State = args.Item.Job.State;
-        newApp.Description = args.Item.Job.Description;
-        newApp.LinkedlnRecruiter = args.Item.Job.LinkedlnRecruiter;
-        newApp.Notes = args.Item.Notes;
-        newApp.DateApplied = args.Item.DateApplied;
-        newApp.ReachOutDate = args.Item.ReachOutDate;
-        newApp.Status = args.Item.Status;
-        newApp.AppType = args.Item.Job.AppType;
-        newApp.HeardBack = args.Item.HeardBack;
-        newApp.isUpdate = true;
-        newApp.Id = args.Item.Id;
+        PopulateFormFromApplication(args.Item);
+        await modal.ShowAsync();
+    }
 
+    private async Task EditFromCard(Application item)
+    {
+        PopulateFormFromApplication(item);
         await modal.ShowAsync();
     }
 
@@ -267,6 +358,7 @@
     {
         await ApplicationService.DeleteApplicationAsync(appId, userId!);
         await grid.RefreshDataAsync();
+        await LoadCardApplicationsAsync();
     }
 
 }
