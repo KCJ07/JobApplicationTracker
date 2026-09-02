@@ -436,3 +436,5 @@ FodyWeavers.xsd
 
 # Local SQLite database
 Data/app.db
+Data/app.db-shm
+Data/app.db-wal
