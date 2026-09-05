@@ -180,10 +180,10 @@ namespace JobApplicationTracker.Services
             return cell.GetString().Trim();
         }
 
-        private static bool ParseYesNo(string v) =>
+        internal static bool ParseYesNo(string v) =>
             v.Trim().ToLowerInvariant() is "yes" or "y" or "true" or "1" or "x";
 
-        private static bool TryParseDate(string v, out DateOnly date) =>
+        internal static bool TryParseDate(string v, out DateOnly date) =>
             DateOnly.TryParse(v.Trim(), CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
 
         private static async Task<XLWorkbook> OpenWorkbookAsync(Stream file)

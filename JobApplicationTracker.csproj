@@ -19,4 +19,15 @@
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="JobApplicationTracker.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="JobApplicationTracker.Tests/**" />
+    <Content Remove="JobApplicationTracker.Tests/**" />
+    <EmbeddedResource Remove="JobApplicationTracker.Tests/**" />
+    <None Remove="JobApplicationTracker.Tests/**" />
+  </ItemGroup>
+
 </Project>
