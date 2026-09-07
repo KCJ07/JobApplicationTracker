@@ -2,16 +2,17 @@ using System.Globalization;
 using ClosedXML.Excel;
 using JobApplicationTracker.Data;
 using JobApplicationTracker.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobApplicationTracker.Services
 {
     public class ExcellImportService : IExcellImportService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public ExcellImportService(ApplicationDbContext context)
+        public ExcellImportService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         /// <summary>Reads the header row plus the first N data rows for the mapping UI.</summary>
@@ -143,8 +144,9 @@ namespace JobApplicationTracker.Services
                 applications.Add(app);
             }
 
-            _context.Applications.AddRange(applications);
-            await _context.SaveChangesAsync();
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            context.Applications.AddRange(applications);
+            await context.SaveChangesAsync();
             return applications.Count;
         }
 

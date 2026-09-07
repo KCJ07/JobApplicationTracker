@@ -29,13 +29,21 @@ public class ApplicationServiceTests : IDisposable
         _context = new ApplicationDbContext(options);
         _context.Database.EnsureCreated();
 
-        _service = new ApplicationService(_context);
+        _service = new ApplicationService(new TestDbContextFactory(options));
     }
 
     public void Dispose()
     {
         _context.Dispose();
         _connection.Dispose();
+    }
+
+    private class TestDbContextFactory : IDbContextFactory<ApplicationDbContext>
+    {
+        private readonly DbContextOptions<ApplicationDbContext> _options;
+        public TestDbContextFactory(DbContextOptions<ApplicationDbContext> options) => _options = options;
+        public ApplicationDbContext CreateDbContext() => new(_options);
+        public Task<ApplicationDbContext> CreateDbContextAsync(CancellationToken ct = default) => Task.FromResult(CreateDbContext());
     }
 
     // Application.ApplicationUserId is a required FK, so every test needs a real user row first

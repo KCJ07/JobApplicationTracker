@@ -1,32 +1,28 @@
-﻿using BlazorBootstrap;
+using BlazorBootstrap;
 using JobApplicationTracker.Data;
-using Microsoft.AspNetCore.SignalR;
 using JobApplicationTracker.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-
 
 namespace JobApplicationTracker.Services
 {
     public class ApplicationService : IApplicationService
     {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        private readonly ApplicationDbContext _context;
-
-        public ApplicationService(ApplicationDbContext context)
+        public ApplicationService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
-        public async Task<(List<Application> Data, int TotalCount)> GetApplicationsAsync( int pageNumber, int pageSize, string sortString, SortDirection sortDirection, string userId)
+        public async Task<(List<Application> Data, int TotalCount)> GetApplicationsAsync(int pageNumber, int pageSize, string sortString, SortDirection sortDirection, string userId)
         {
-            var totalCount = await _context.Applications.Where(x => x.ApplicationUserId.ToString() == userId).CountAsync();
+            await using var context = await _contextFactory.CreateDbContextAsync();
 
-            IQueryable<Application> query = _context.Applications
+            var totalCount = await context.Applications.Where(x => x.ApplicationUserId.ToString() == userId).CountAsync();
+
+            IQueryable<Application> query = context.Applications
                 .Where(x => x.ApplicationUserId.ToString() == userId)
                 .Include(x => x.Job);
-
 
             switch (sortString)
             {
@@ -77,12 +73,12 @@ namespace JobApplicationTracker.Services
                 .ToListAsync();
 
             return (applications, totalCount);
-
         }
-
 
         public async Task CreateApplicationAsync(string userId, ApplicationStatus status, bool heardBack, DateOnly reachOutDate, DateOnly dateApplied, string notes, string jobTitle, string company, string website, ApplicationType appType, string state, string description, string linkedlnRecruiter)
         {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
             var job = new Job
             {
                 JobTitle = jobTitle,
@@ -92,8 +88,6 @@ namespace JobApplicationTracker.Services
                 State = state,
                 Description = description,
                 LinkedlnRecruiter = linkedlnRecruiter
-
-
             };
 
             var application = new Application
@@ -105,30 +99,27 @@ namespace JobApplicationTracker.Services
                 Notes = notes,
                 ApplicationUserId = userId,
                 Job = job
-
             };
 
-
-
-            _context.Add(application);
-            await _context.SaveChangesAsync();
+            context.Add(application);
+            await context.SaveChangesAsync();
         }
-
 
         public async Task DeleteApplicationAsync(int appId, string userId)
         {
-            var query = _context.Applications
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            await context.Applications
                 .Where(x => x.ApplicationUserId == userId)
                 .Where(x => x.Id == appId)
-                .ExecuteDelete();
-
-            await _context.SaveChangesAsync();
-
+                .ExecuteDeleteAsync();
         }
 
         public async Task UpdateApplicationAsync(int appId, string userId, ApplicationStatus status, bool heardBack, DateOnly reachOutDate, DateOnly dateApplied, string notes, string jobTitle, string company, string website, ApplicationType appType, string state, string description, string linkedlnRecruiter)
         {
-            var query = await _context.Applications
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var query = await context.Applications
                 .Include(x => x.Job)
                 .Where(x => x.ApplicationUserId == userId)
                 .Where(x => x.Id == appId)
@@ -144,7 +135,7 @@ namespace JobApplicationTracker.Services
             query.ReachOutDate = reachOutDate;
             query.DateApplied = dateApplied;
             query.Notes = notes;
-            query.Job.JobTitle = jobTitle; 
+            query.Job.JobTitle = jobTitle;
             query.Job.Company = company;
             query.Job.Website = website;
             query.Job.AppType = appType;
@@ -152,11 +143,7 @@ namespace JobApplicationTracker.Services
             query.Job.Description = description;
             query.Job.LinkedlnRecruiter = linkedlnRecruiter;
 
-
-
-            await _context.SaveChangesAsync();
-
-
+            await context.SaveChangesAsync();
         }
     }
 }
