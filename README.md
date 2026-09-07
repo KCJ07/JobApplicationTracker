@@ -91,6 +91,9 @@ erDiagram
 - [ ] Fix bug where edit table shows up when clicking the delete icon
 - [ ] Get rid of searching in small view (not working)
 - [ ] add Stats viewer
+- [ ] Fix DbContext concurrency crash on page load (grid's auto data load races OnInitializedAsync's card data load, both hit the same shared DbContext at once, only shows up with real network latency like Azure SQL)
+- [ ] Fix grid.RefreshDataAsync() being called unconditionally in HandleSubmit and RunImport even when in card view (grid ref is null/stale there)
+- [ ] Fix overlapping GUI on list view when job list is empty
 
 # Future Ideas for project
 - AI assisted recruiter lookup
